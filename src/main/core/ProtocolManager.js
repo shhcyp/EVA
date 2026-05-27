@@ -58,12 +58,46 @@ export default class ProtocolManager extends EventEmitter {
       return this.handleResourceProtocol(url)
     }
 
+    if (url.startsWith('eva://')) {
+      return this.handleEvaProtocol(url)
+    }
+
     if (
       url.toLowerCase().startsWith('mo:') ||
       url.toLowerCase().startsWith('motrix:')
     ) {
       return this.handleMoProtocol(url)
     }
+  }
+
+  handleEvaProtocol (url) {
+    const parsed = new URL(url)
+
+    const path = parsed.hostname
+    const query = Object.fromEntries(parsed.searchParams.entries())
+
+    let command = null
+
+    switch (path) {
+    case 'download':
+      command = 'eva:open-download'
+      break
+    case 'detail':
+      command = 'eva:open-detail'
+      break
+    case 'search':
+      command = 'eva:open-search'
+      break
+    default:
+      command = 'eva:open-home'
+    }
+
+    // ✅ 统一字段
+    const payload = {
+      url: query.id || query.url || ''
+    }
+
+    global.application.sendCommandToAll(command, payload)
   }
 
   handleResourceProtocol (url) {

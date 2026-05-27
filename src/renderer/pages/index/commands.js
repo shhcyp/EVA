@@ -199,3 +199,17 @@ commands.register('application:update-system-theme', updateSystemTheme)
 commands.register('application:update-theme', updateTheme)
 commands.register('application:update-locale', updateLocale)
 commands.register('application:update-tray-focused', updateTrayFocused)
+
+const openDownloadDialog = (payload = {}) => {
+  const { url } = payload
+
+  if (!url) return
+
+  // 1. 存入 store
+  store.dispatch('app/updateAddTaskUrl', url)
+
+  // 2. 打开 UI
+  store.dispatch('app/showAddTaskDialog', ADD_TASK_TYPE.URI)
+}
+
+commands.register('eva:open-download', openDownloadDialog)

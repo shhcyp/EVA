@@ -289,6 +289,13 @@
       },
       handleOpen () {
         this.form = initTaskForm(this.$store.state)
+
+        // 同步 EVA 传来的 URL
+        const evaUrl = this.$store.state.app.addTaskUrl
+        if (evaUrl) {
+          this.form.uris = evaUrl
+        }
+
         if (this.taskType === ADD_TASK_TYPE.URI) {
           this.autofillResourceLink()
           setTimeout(() => {

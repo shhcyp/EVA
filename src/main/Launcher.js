@@ -12,19 +12,28 @@ import {
 } from './utils'
 import { EMPTY_STRING } from '@shared/constants'
 
+const PROTOCOL = 'eva'
+
 export default class Launcher extends EventEmitter {
   constructor () {
     super()
+
     this.url = EMPTY_STRING
     this.file = EMPTY_STRING
+
+    // ✅ 防丢队列（关键）
+    this.pendingUrls = []
+    this.pendingFiles = []
 
     this.makeSingleInstance(() => {
       this.init()
     })
   }
 
+  // =========================
+  // 单实例
+  // =========================
   makeSingleInstance (callback) {
-    // Mac App Store Sandboxed App not support requestSingleInstanceLock
     if (is.mas()) {
       callback && callback()
       return
@@ -34,19 +43,50 @@ export default class Launcher extends EventEmitter {
 
     if (!gotSingleLock) {
       app.quit()
-    } else {
-      app.on('second-instance', (event, argv, workingDirectory) => {
-        global.application.showPage('index')
-        if (!is.macOS() && argv.length > 1) {
-          this.handleAppLaunchArgv(argv)
-        }
-      })
+      return
+    }
 
-      callback && callback()
+    app.on('second-instance', (event, argv) => {
+      if (global.application) {
+        global.application.showPage('index')
+      }
+
+      // ✅ 统一处理 argv（避免重复调用）
+      this.handleAppLaunchArgv(argv)
+    })
+
+    callback && callback()
+  }
+
+  // =========================
+  // 协议注册
+  // =========================
+  registerProtocol () {
+    try {
+      if (is.macOS()) {
+        const ok = app.setAsDefaultProtocolClient(PROTOCOL)
+        logger.info(`[EVA] macOS protocol register: ${ok}`)
+      }
+
+      if (is.windows()) {
+        const ok = app.setAsDefaultProtocolClient(PROTOCOL, process.execPath)
+        logger.info(`[EVA] Windows protocol register: ${ok}`)
+      }
+
+      if (is.linux()) {
+        logger.info('[EVA] Linux protocol needs manual registration')
+      }
+    } catch (e) {
+      logger.warn('[EVA] protocol register failed:', e)
     }
   }
 
+  // =========================
+  // 初始化
+  // =========================
   init () {
+    this.registerProtocol()
+
     this.exceptionHandler = new ExceptionHandler()
 
     this.openedAtLogin = is.macOS()
@@ -57,11 +97,14 @@ export default class Launcher extends EventEmitter {
       this.handleAppLaunchArgv(process.argv)
     }
 
-    logger.info('[Motrix] openedAtLogin:', this.openedAtLogin)
+    logger.info('[EVA] openedAtLogin:', this.openedAtLogin)
 
     this.handleAppEvents()
   }
 
+  // =========================
+  // App Events
+  // =========================
   handleAppEvents () {
     this.handleRendererRemote()
     this.handleOpenUrl()
@@ -77,53 +120,43 @@ export default class Launcher extends EventEmitter {
     })
   }
 
-  /**
-   * handleOpenUrl
-   * Event 'open-url' macOS only
-   * "name": "Motrix Protocol",
-   * "schemes": ["mo", "motrix"]
-   */
+  // =========================
+  // macOS protocol (eva://)
+  // =========================
   handleOpenUrl () {
-    if (is.mas() || !is.macOS()) {
-      return
-    }
+    if (is.mas() || !is.macOS()) return
+
     app.on('open-url', (event, url) => {
-      logger.info(`[Motrix] open-url: ${url}`)
       event.preventDefault()
+
+      logger.info(`[EVA] open-url: ${url}`)
+
       this.url = url
       this.sendUrlToApplication()
     })
   }
 
-  /**
-   * handleOpenFile
-   * Event 'open-file' macOS only
-   * handle open torrent file
-   */
   handleOpenFile () {
-    if (!is.macOS()) {
-      return
-    }
+    if (!is.macOS()) return
+
     app.on('open-file', (event, path) => {
-      logger.info(`[Motrix] open-file: ${path}`)
       event.preventDefault()
+
+      logger.info(`[EVA] open-file: ${path}`)
+
       this.file = path
       this.sendFileToApplication()
     })
   }
 
-  /**
-   * handleAppLaunchArgv
-   * For Windows, Linux
-   * @param {array} argv
-   */
+  // =========================
+  // Windows / Linux argv
+  // =========================
   handleAppLaunchArgv (argv) {
-    logger.info('[Motrix] handleAppLaunchArgv:', argv)
+    logger.info('[EVA] handleAppLaunchArgv:', argv)
 
-    // args: array, extra: map
     const { args, extra } = splitArgv(argv)
-    logger.info('[Motrix] split argv args:', args)
-    logger.info('[Motrix] split argv extra:', extra)
+
     if (extra['--opened-at-login'] === '1') {
       this.openedAtLogin = true
     }
@@ -141,49 +174,79 @@ export default class Launcher extends EventEmitter {
     }
   }
 
+  // =========================
+  // URL dispatch
+  // =========================
   sendUrlToApplication () {
-    if (this.url && global.application && global.application.isReady) {
+    if (!this.url) return
+
+    if (global.application && global.application.isReady) {
       global.application.handleProtocol(this.url)
-      this.url = EMPTY_STRING
+    } else {
+      this.pendingUrls.push(this.url)
     }
+
+    this.url = EMPTY_STRING
   }
 
+  // =========================
+  // File dispatch
+  // =========================
   sendFileToApplication () {
-    if (this.file && global.application && global.application.isReady) {
+    if (!this.file) return
+
+    if (global.application && global.application.isReady) {
       global.application.handleFile(this.file)
-      this.file = EMPTY_STRING
+    } else {
+      this.pendingFiles.push(this.file)
     }
+
+    this.file = EMPTY_STRING
   }
 
+  // =========================
+  // App Ready
+  // =========================
   handelAppReady () {
     app.on('ready', () => {
       global.application = new Application()
 
-      const { openedAtLogin } = this
       global.application.start('index', {
-        openedAtLogin
+        openedAtLogin: this.openedAtLogin
       })
 
       global.application.on('ready', () => {
-        this.sendUrlToApplication()
+        // flush URL
+        this.pendingUrls.forEach(url => {
+          global.application.handleProtocol(url)
+          logger.info('[EVA] protocol received:', url)
+        })
+        this.pendingUrls = []
 
-        this.sendFileToApplication()
+        // flush file
+        this.pendingFiles.forEach(file => {
+          global.application.handleFile(file)
+        })
+        this.pendingFiles = []
       })
     })
 
     app.on('activate', () => {
       if (global.application) {
-        logger.info('[Motrix] activate')
+        logger.info('[EVA] activate')
         global.application.showPage('index')
       }
     })
   }
 
+  // =========================
+  // Quit
+  // =========================
   handleAppWillQuit () {
     app.on('will-quit', () => {
-      logger.info('[Motrix] will-quit')
+      logger.info('[EVA] will-quit')
+
       if (global.application) {
-        logger.info('[Motrix] will-quit.application.stop')
         global.application.stop()
       }
     })
