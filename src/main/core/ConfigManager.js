@@ -102,7 +102,7 @@ export default class ConfigManager {
       defaults: {
         'auto-check-update': is.macOS(),
         'auto-hide-window': false,
-        'auto-sync-tracker': true,
+        'auto-sync-tracker': false,
         'enable-upnp': true,
         'engine-max-connection-per-server': getMaxConnectionPerServer(),
         'favorite-directories': [],

@@ -17,33 +17,33 @@
         :model="form"
         :rules="rules"
       >
-        <el-form-item
-          :label="`${$t('preferences.auto-update')}: `"
-          :label-width="formLabelWidth"
-        >
-          <el-col class="form-item-sub" :span="24">
-            <el-checkbox v-model="form.autoCheckUpdate">
-              {{ $t('preferences.auto-check-update') }}
-            </el-checkbox>
-            <div
-              class="el-form-item__info"
-              style="margin-top: 8px;"
-              v-if="form.lastCheckUpdateTime !== 0"
-            >
-              {{
-                $t('preferences.last-check-update-time') + ': ' +
-                (
-                  form.lastCheckUpdateTime !== 0 ?
-                    new Date(form.lastCheckUpdateTime).toLocaleString() :
-                    new Date().toLocaleString()
-                )
-              }}
-              <span class="action-link" @click.prevent="onCheckUpdateClick">
-                {{ $t('app.check-updates-now') }}
-              </span>
-            </div>
-          </el-col>
-        </el-form-item>
+<!--        <el-form-item-->
+<!--          :label="`${$t('preferences.auto-update')}: `"-->
+<!--          :label-width="formLabelWidth"-->
+<!--        >-->
+<!--          <el-col class="form-item-sub" :span="24">-->
+<!--            <el-checkbox v-model="form.autoCheckUpdate">-->
+<!--              {{ $t('preferences.auto-check-update') }}-->
+<!--            </el-checkbox>-->
+<!--            <div-->
+<!--              class="el-form-item__info"-->
+<!--              style="margin-top: 8px;"-->
+<!--              v-if="form.lastCheckUpdateTime !== 0"-->
+<!--            >-->
+<!--              {{-->
+<!--                $t('preferences.last-check-update-time') + ': ' +-->
+<!--                (-->
+<!--                  form.lastCheckUpdateTime !== 0 ?-->
+<!--                    new Date(form.lastCheckUpdateTime).toLocaleString() :-->
+<!--                    new Date().toLocaleString()-->
+<!--                )-->
+<!--              }}-->
+<!--              <span class="action-link" @click.prevent="onCheckUpdateClick">-->
+<!--                {{ $t('app.check-updates-now') }}-->
+<!--              </span>-->
+<!--            </div>-->
+<!--          </el-col>-->
+<!--        </el-form-item>-->
         <el-form-item
           :label="`${$t('preferences.proxy')}: `"
           :label-width="formLabelWidth"

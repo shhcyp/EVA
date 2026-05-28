@@ -1,6 +1,6 @@
 export default {
   'basic': '基础设置',
-  'advanced': '进阶设置',
+  'advanced': '高级设置',
   'lab': '实验室',
   'save': '保存并应用',
   'save-success-message': '偏好设置保存成功',

@@ -2,7 +2,7 @@
 
 <p>
   <a href="https://motrix.app">
-    <img src="./static/512x512.png" width="256" alt="Motrix App Icon" />
+    <img src="static/512x512.png" width="256" alt="Motrix App Icon" />
   </a>
 </p>
 

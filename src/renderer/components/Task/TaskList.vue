@@ -86,6 +86,6 @@
 .no-task-inner {
   width: 100%;
   padding-top: 360px;
-  background: transparent url('~@/assets/no-task.svg') top center no-repeat;
+  //background: transparent url('~@/assets/no-task.svg') top center no-repeat;
 }
 </style>

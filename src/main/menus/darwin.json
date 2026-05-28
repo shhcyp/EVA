@@ -6,7 +6,6 @@
         { "id": "app.about", "command": "application:about", "command-before": "application:show?page=index" },
         { "type": "separator" },
         { "id": "app.preferences", "command": "application:preferences" },
-        { "id": "app.check-for-updates", "command": "application:check-for-updates" },
         { "id": "app.hide", "role": "hide" },
         { "id": "app.hide-others", "role": "hideothers" },
         { "id": "app.unhide", "role": "unhide" },
@@ -66,10 +65,6 @@
       "id": "menu.help",
       "submenu": [
         { "id": "help.official-website", "command": "help:official-website" },
-        { "id": "help.manual", "command": "help:manual" },
-        { "id": "help.release-notes", "command": "help:release-notes" },
-        { "type": "separator" },
-        { "id": "help.report-problem", "command": "help:report-problem" },
         { "type": "separator" },
         { "id": "help.toggle-dev-tools", "role": "toggledevtools" }
       ]

@@ -294,7 +294,7 @@ export default class Application extends EventEmitter {
     const key = 'proxy'
     this.configListeners[key] = userConfig.onDidChange(key, async (newValue, oldValue) => {
       logger.info(`[Motrix] detected ${key} value change event:`, newValue, oldValue)
-      this.updateManager.setupProxy(newValue)
+      this.updateManager?.setupProxy(newValue)
 
       const { enable, server, bypass, scope = [] } = newValue
       const system = enable && server && scope.includes(PROXY_SCOPES.DOWNLOAD)
@@ -682,6 +682,17 @@ export default class Application extends EventEmitter {
       return
     }
 
+    // EVA 暂时关闭自动更新
+    if (app.getName() === 'EVA') {
+      this.updateManager = {
+        isChecking: false,
+        isDownloading: false,
+        quitAndInstall () {},
+        checkForUpdates () {}
+      }
+      return
+    }
+
     const enabled = this.configManager.getUserConfig('auto-check-update')
     const proxy = this.configManager.getSystemConfig('all-proxy')
     const lastTime = this.configManager.getUserConfig('last-check-update-time')
@@ -694,42 +705,42 @@ export default class Application extends EventEmitter {
   }
 
   handleUpdaterEvents () {
-    this.updateManager.on('checking', (event) => {
+    this.updateManager?.on('checking', (event) => {
       this.menuManager.updateMenuItemEnabledState('app.check-for-updates', false)
       this.trayManager.updateMenuItemEnabledState('app.check-for-updates', false)
       this.configManager.setUserConfig('last-check-update-time', Date.now())
     })
 
-    this.updateManager.on('download-progress', (event) => {
+    this.updateManager?.on('download-progress', (event) => {
       const win = this.windowManager.getWindow('index')
       win.setProgressBar(event.percent / 100)
     })
 
-    this.updateManager.on('update-not-available', (event) => {
+    this.updateManager?.on('update-not-available', (event) => {
       this.menuManager.updateMenuItemEnabledState('app.check-for-updates', true)
       this.trayManager.updateMenuItemEnabledState('app.check-for-updates', true)
     })
 
-    this.updateManager.on('update-downloaded', (event) => {
+    this.updateManager?.on('update-downloaded', (event) => {
       this.menuManager.updateMenuItemEnabledState('app.check-for-updates', true)
       this.trayManager.updateMenuItemEnabledState('app.check-for-updates', true)
       const win = this.windowManager.getWindow('index')
       win.setProgressBar(1)
     })
 
-    this.updateManager.on('update-cancelled', (event) => {
+    this.updateManager?.on('update-cancelled', (event) => {
       this.menuManager.updateMenuItemEnabledState('app.check-for-updates', true)
       this.trayManager.updateMenuItemEnabledState('app.check-for-updates', true)
       const win = this.windowManager.getWindow('index')
       win.setProgressBar(-1)
     })
 
-    this.updateManager.on('will-updated', async (event) => {
+    this.updateManager?.on('will-updated', async (event) => {
       this.windowManager.setWillQuit(true)
       await this.stopAllSettled()
     })
 
-    this.updateManager.on('update-error', (event) => {
+    this.updateManager?.on('update-error', (event) => {
       this.menuManager.updateMenuItemEnabledState('app.check-for-updates', true)
       this.trayManager.updateMenuItemEnabledState('app.check-for-updates', true)
     })
@@ -803,7 +814,10 @@ export default class Application extends EventEmitter {
     })
 
     this.on('application:check-for-updates', () => {
-      this.updateManager.check()
+      if (!this.updateManager) {
+        return
+      }
+      this.updateManager?.check()
     })
 
     this.on('application:change-theme', (theme) => {
@@ -889,24 +903,24 @@ export default class Application extends EventEmitter {
     })
 
     this.on('help:official-website', () => {
-      const url = 'https://motrix.app/'
+      const url = 'https://macnova.cn/'
       this.openExternal(url)
     })
 
-    this.on('help:manual', () => {
-      const url = 'https://motrix.app/manual'
-      this.openExternal(url)
-    })
+    // this.on('help:manual', () => {
+    //   const url = 'https://motrix.app/manual'
+    //   this.openExternal(url)
+    // })
+    //
+    // this.on('help:release-notes', () => {
+    //   const url = 'https://motrix.app/release'
+    //   this.openExternal(url)
+    // })
 
-    this.on('help:release-notes', () => {
-      const url = 'https://motrix.app/release'
-      this.openExternal(url)
-    })
-
-    this.on('help:report-problem', () => {
-      const url = 'https://motrix.app/report'
-      this.openExternal(url)
-    })
+    // this.on('help:report-problem', () => {
+    //   const url = 'https://motrix.app/report'
+    //   this.openExternal(url)
+    // })
   }
 
   openExternal (url) {
@@ -970,12 +984,14 @@ export default class Application extends EventEmitter {
   }
 
   handleProgressChange (progress) {
-    if (this.updateManager.isChecking) {
+    if (this.updateManager?.isChecking) {
       return
     }
+
     if (!is.windows() && progress === 2) {
       progress = 0
     }
+
     this.windowManager.getWindow('index').setProgressBar(progress)
   }
 

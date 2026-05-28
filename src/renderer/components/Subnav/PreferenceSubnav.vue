@@ -20,15 +20,15 @@
         </i>
         <span>{{ $t('preferences.advanced') }}</span>
       </li>
-      <li
-        @click="() => nav('lab')"
-        :class="[ current === 'lab' ? 'active' : '' ]"
-        >
-        <i class="subnav-icon">
-          <mo-icon name='preference-lab' width="20" height="20" />
-        </i>
-        <span>{{ $t('preferences.lab') }}</span>
-      </li>
+<!--      <li-->
+<!--        @click="() => nav('lab')"-->
+<!--        :class="[ current === 'lab' ? 'active' : '' ]"-->
+<!--        >-->
+<!--        <i class="subnav-icon">-->
+<!--          <mo-icon name='preference-lab' width="20" height="20" />-->
+<!--        </i>-->
+<!--        <span>{{ $t('preferences.lab') }}</span>-->
+<!--      </li>-->
     </ul>
   </nav>
 </template>

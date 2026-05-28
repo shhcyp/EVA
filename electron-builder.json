@@ -1,6 +1,6 @@
 {
   "productName": "EVA",
-  "appId": "cn.wowtw.eva",
+  "appId": "cn.macnova.eva",
   "afterPack": "./build/afterPackHook.js",
   "afterSign": "./build/afterSignHook.js",
   "fileAssociations": [
@@ -39,21 +39,23 @@
     }
   ],
   "dmg": {
+    "background": "build/dmg-background@2x.png",
+    "iconSize": 72,
     "window": {
-      "width": 540,
-      "height": 380
+      "width": 600,
+      "height": 400
     },
     "contents": [
       {
-        "x": 410,
-        "y": 230,
-        "type": "link",
-        "path": "/Applications"
+        "x": 180,
+        "y": 147,
+        "type": "file"
       },
       {
-        "x": 130,
-        "y": 230,
-        "type": "file"
+        "x": 420,
+        "y": 147,
+        "type": "link",
+        "path": "/Applications"
       }
     ]
   },
@@ -97,113 +99,6 @@
         "**/*"
       ]
     },
-    "category": "public.app-category.utilities"
-  },
-  "win": {
-    "target": [
-      {
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
-        "target": "appx",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
-        "target": "zip",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
-        "target": "portable",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      }
-    ],
-    "extraResources": {
-      "from": "./extra/win32/${arch}/",
-      "to": "./",
-      "filter": [
-        "**/*"
-      ]
-    }
-  },
-  "nsis": {
-    "artifactName": "${productName}-Setup-${version}.${ext}",
-    "oneClick": false,
-    "allowToChangeInstallationDirectory": true
-  },
-  "appx": {
-    "artifactName": "${productName}-${version}-${arch}.${ext}",
-    "applicationId": "app.motrix.native",
-    "identityName": "59744DrrOot.Motrix",
-    "publisher": "CN=5BB4961D-30D8-4993-9ADF-05E1E1F5A395",
-    "publisherDisplayName": "Dr_rOot"
-  },
-  "portable": {
-    "artifactName": "${productName}-${version}-${arch}.${ext}"
-  },
-  "linux": {
-    "category": "Network",
-    "mimeTypes": [
-      "application/x-bittorrent",
-      "x-scheme-handler/magnet"
-    ],
-    "target": [
-      {
-        "target": "AppImage",
-        "arch": [
-          "x64",
-          "arm64",
-          "armv7l"
-        ]
-      },
-      {
-        "target": "deb",
-        "arch": [
-          "x64",
-          "arm64",
-          "armv7l"
-        ]
-      },
-      {
-        "target": "rpm",
-        "arch": [
-          "x64"
-        ]
-      },
-      {
-        "target": "snap",
-        "arch": [
-          "x64"
-        ]
-      }
-    ],
-    "extraResources": {
-      "from": "./extra/linux/${arch}/",
-      "to": "./",
-      "filter": [
-        "**/*"
-      ]
-    }
-  },
-  "publish": [
-    {
-      "provider": "generic",
-      "url": "https://dl.motrix.app/releases/"
-    },
-    {
-      "provider": "github"
-    }
-  ]
+    "category": "public.app-category.internet"
+  }
 }

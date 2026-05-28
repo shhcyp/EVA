@@ -7,7 +7,7 @@
     :before-close="handleClose"
     @closed="handleClosed">
     <mo-app-info :version="version" :engine="engineInfo" />
-    <mo-copyright slot="footer" />
+<!--    <mo-copyright slot="footer" />-->
   </el-dialog>
 </template>
 
