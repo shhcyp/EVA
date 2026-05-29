@@ -7,28 +7,24 @@ on:
 
 jobs:
   release:
-    # 👇 建议改用 windows-2022，比 latest 更稳定
     runs-on: windows-2022
-
     permissions:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Install dependencies
+      - name: Install dependencies (忽略依赖冲突 + 跳过 postinstall)
         run: |
-          npm install --legacy-peer-deps
-          # 👇 强制安装最新版 electron-builder
-          npm install electron-builder@latest --save-dev
+          npm install --legacy-peer-deps --ignore-scripts
 
-      - name: Build Electron app
+      - name: Build Electron App
         uses: motrixapp/action-electron-builder@v2
         with:
           build_script_name: build:github
@@ -36,5 +32,3 @@ jobs:
           release: true
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
-          # 👇 强制开启完整打包
-          ELECTRON_BUILDER_ARGS: --win --publish always

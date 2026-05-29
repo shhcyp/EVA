@@ -121,41 +121,18 @@
 
   "win": {
     "target": [
-      {
-        "target": "nsis",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
-        "target": "zip",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
-        "target": "portable",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      }
+      { "target": "nsis", "arch": ["x64", "ia32"] },
+      { "target": "zip", "arch": ["x64", "ia32"] },
+      { "target": "portable", "arch": ["x64", "ia32"] }
     ],
     "extraResources": {
       "from": "./extra/win32/${arch}/",
       "to": "./",
-      "filter": [
-        "**/*"
-      ]
+      "filter": ["**/*"]
     },
-    "asarUnpack": [
-      "**/node_modules/electron/**/*",
-      "**/electron/**/*",
-      "**/*.dll"
-    ]
+    "asarUnpack": ["**/*.dll", "**/node_modules/**/*"]
   },
+
   "nsis": {
     "artifactName": "${productName}-Setup-${version}.${ext}",
     "oneClick": false,
