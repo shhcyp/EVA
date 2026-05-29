@@ -1,8 +1,20 @@
 {
   "productName": "EVA",
   "appId": "cn.macnova.eva",
+
   "afterPack": "./build/afterPackHook.js",
   "afterSign": "./build/afterSignHook.js",
+
+  "asar": true,
+
+  "directories": {
+    "output": "release"
+  },
+
+  "files": [
+    "dist/electron/**/*"
+  ],
+
   "fileAssociations": [
     {
       "ext": "torrent",
@@ -11,13 +23,7 @@
       "role": "Viewer"
     }
   ],
-  "asar": true,
-  "directories": {
-    "output": "release"
-  },
-  "files": [
-    "dist/electron/**/*"
-  ],
+
   "protocols": [
     {
       "name": "EVA Protocol",
@@ -38,13 +44,16 @@
       ]
     }
   ],
+
   "dmg": {
     "background": "build/dmg-background@2x.png",
     "iconSize": 72,
+
     "window": {
       "width": 600,
       "height": 400
     },
+
     "contents": [
       {
         "x": 180,
@@ -59,6 +68,7 @@
       }
     ]
   },
+
   "mac": {
     "extendInfo": {
       "CFBundleURLTypes": [
@@ -70,6 +80,7 @@
         }
       ]
     },
+
     "target": [
       {
         "target": "dmg",
@@ -88,10 +99,15 @@
         ]
       }
     ],
+
     "type": "distribution",
+
     "darkModeSupport": true,
+
     "hardenedRuntime": false,
+
     "notarize": false,
+
     "extraResources": {
       "from": "./extra/darwin/${arch}/",
       "to": "./",
@@ -99,6 +115,62 @@
         "**/*"
       ]
     },
+
     "category": "public.app-category.internet"
+  },
+
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      },
+      {
+        "target": "portable",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+
+    "icon": "build/icon.ico",
+
+    "publisherName": "MacNova",
+
+    "requestedExecutionLevel": "asInvoker",
+
+    "extraResources": {
+      "from": "./extra/win/",
+      "to": "./",
+      "filter": [
+        "**/*"
+      ]
+    }
+  },
+
+  "nsis": {
+    "oneClick": false,
+
+    "allowToChangeInstallationDirectory": true,
+
+    "perMachine": false,
+
+    "createDesktopShortcut": true,
+
+    "createStartMenuShortcut": true,
+
+    "shortcutName": "EVA",
+
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+
+    "installerIcon": "build/icon.ico",
+
+    "uninstallerIcon": "build/icon.ico",
+
+    "installerHeaderIcon": "build/icon.ico",
+
+    "deleteAppDataOnUninstall": false
   }
 }
