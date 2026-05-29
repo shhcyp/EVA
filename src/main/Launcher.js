@@ -163,6 +163,28 @@ export default class Launcher extends EventEmitter {
   // =========================
   // Windows / Linux argv
   // =========================
+  // handleAppLaunchArgv (argv) {
+  //   logger.info('[EVA] handleAppLaunchArgv:', argv)
+  //
+  //   const { args, extra } = splitArgv(argv)
+  //
+  //   if (extra['--opened-at-login'] === '1') {
+  //     this.openedAtLogin = true
+  //   }
+  //
+  //   const file = parseArgvAsFile(args)
+  //   if (file) {
+  //     this.file = file
+  //     this.sendFileToApplication()
+  //   }
+  //
+  //   const url = parseArgvAsUrl(args)
+  //   if (url) {
+  //     this.url = url
+  //     this.sendUrlToApplication()
+  //   }
+  // }
+
   handleAppLaunchArgv (argv) {
     logger.info('[EVA] handleAppLaunchArgv:', argv)
 
@@ -178,7 +200,12 @@ export default class Launcher extends EventEmitter {
       this.sendFileToApplication()
     }
 
-    const url = parseArgvAsUrl(args)
+    // 👇 👇 👇 【关键修复】Windows/Linux 强制识别 eva:// 协议
+    const url = args.find(item =>
+      item.toLowerCase().startsWith('eva://') ||
+      parseArgvAsUrl(args)
+    ) || parseArgvAsUrl(args)
+
     if (url) {
       this.url = url
       this.sendUrlToApplication()
@@ -227,14 +254,14 @@ export default class Launcher extends EventEmitter {
       })
 
       global.application.on('ready', () => {
-        // flush URL
+        // 强制刷新所有等待中的 URL
         this.pendingUrls.forEach(url => {
+          logger.info('[EVA] flushing pending url:', url)
           global.application.handleProtocol(url)
-          logger.info('[EVA] protocol received:', url)
         })
         this.pendingUrls = []
 
-        // flush file
+        // 强制刷新所有等待中的文件
         this.pendingFiles.forEach(file => {
           global.application.handleFile(file)
         })

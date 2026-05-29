@@ -46,7 +46,11 @@ export default class ProtocolManager extends EventEmitter {
   }
 
   handle (url) {
-    logger.info(`[Motrix] protocol url: ${url}`)
+    logger.info(`[EVA] protocol url: ${url}`)
+
+    if (url.startsWith('eva://')) {
+      return this.handleEvaProtocol(url)
+    }
 
     if (
       url.toLowerCase().startsWith('ftp:') ||
@@ -56,10 +60,6 @@ export default class ProtocolManager extends EventEmitter {
       url.toLowerCase().startsWith('thunder:')
     ) {
       return this.handleResourceProtocol(url)
-    }
-
-    if (url.startsWith('eva://')) {
-      return this.handleEvaProtocol(url)
     }
 
     if (
