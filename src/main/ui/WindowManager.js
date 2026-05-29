@@ -288,7 +288,7 @@ export default class WindowManager extends EventEmitter {
     if (!window) {
       return
     }
-    logger.info('[Motrix] send command to:', command, ...args)
+    logger.info('[EVA] send command to:', command, ...args)
     window.webContents.send('command', command, ...args)
   }
 

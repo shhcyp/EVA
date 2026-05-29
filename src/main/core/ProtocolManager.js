@@ -71,10 +71,15 @@ export default class ProtocolManager extends EventEmitter {
   }
 
   handleEvaProtocol (url) {
+    logger.info('[EVA PROTOCOL RAW]', url)
+
     const parsed = new URL(url)
 
     const path = parsed.hostname
-    const query = Object.fromEntries(parsed.searchParams.entries())
+
+    // ⚠️ Windows/Electron兼容写法
+    const search = parsed.search || ''
+    const query = Object.fromEntries(new URLSearchParams(search))
 
     let command = null
 
@@ -92,10 +97,11 @@ export default class ProtocolManager extends EventEmitter {
       command = 'eva:open-home'
     }
 
-    // ✅ 统一字段
     const payload = {
-      url: query.id || query.url || ''
+      url: query.id || query.url || parsed.pathname || ''
     }
+
+    logger.info('[EVA PROTOCOL PARSED PAYLOAD]', payload)
 
     global.application.sendCommandToAll(command, payload)
   }

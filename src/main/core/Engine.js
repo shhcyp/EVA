@@ -28,7 +28,7 @@ export default class Engine {
 
   start () {
     const pidPath = getEnginePidPath()
-    logger.info('[Motrix] Engie pid path:', pidPath)
+    logger.info('[EVA] Engie pid path:', pidPath)
 
     if (this.instance) {
       return
@@ -37,7 +37,7 @@ export default class Engine {
     const binPath = this.getEngineBinPath()
     const args = this.getStartArgs()
     this.instance = spawn(binPath, args, {
-      windowsHide: false,
+      windowsHide: true,
       stdio: is.dev() ? 'pipe' : 'ignore'
     })
     const pid = this.instance.pid.toString()
@@ -47,27 +47,27 @@ export default class Engine {
       try {
         unlink(pidPath, (err) => {
           if (err) {
-            logger.warn(`[Motrix] Unlink engine process pid file failed: ${err}`)
+            logger.warn(`[EVA] Unlink engine process pid file failed: ${err}`)
           }
         })
       } catch (err) {
-        logger.warn(`[Motrix] Unlink engine process pid file failed: ${err}`)
+        logger.warn(`[EVA] Unlink engine process pid file failed: ${err}`)
       }
     })
 
     if (is.dev()) {
       this.instance.stdout.on('data', (data) => {
-        logger.log('[Motrix] engine stdout===>', data.toString())
+        logger.log('[EVA] engine stdout===>', data.toString())
       })
 
       this.instance.stderr.on('data', (data) => {
-        logger.log('[Motrix] engine stderr===>', data.toString())
+        logger.log('[EVA] engine stderr===>', data.toString())
       })
     }
   }
 
   stop () {
-    logger.info('[Motrix] engine.stop.instance')
+    logger.info('[EVA] engine.stop.instance')
     if (this.instance) {
       this.instance.kill()
       this.instance = null
@@ -77,7 +77,7 @@ export default class Engine {
   writePidFile (pidPath, pid) {
     writeFile(pidPath, pid, (err) => {
       if (err) {
-        logger.error(`[Motrix] Write engine process pid failed: ${err}`)
+        logger.error(`[EVA] Write engine process pid failed: ${err}`)
       }
     })
   }
@@ -86,7 +86,7 @@ export default class Engine {
     const result = getAria2BinPath(platform, arch)
     const binIsExist = existsSync(result)
     if (!binIsExist) {
-      logger.error('[Motrix] engine bin is not exist:', result)
+      logger.error('[EVA] engine bin is not exist:', result)
       throw new Error(this.i18n.t('app.engine-missing-message'))
     }
 

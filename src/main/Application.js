@@ -649,6 +649,11 @@ export default class Application extends EventEmitter {
   handleProtocol (url) {
     this.show()
 
+    // 强制打开任务面板
+    this.sendCommandToAll('application:show-task-panel', {
+      url
+    })
+
     this.protocolManager.handle(url)
   }
 

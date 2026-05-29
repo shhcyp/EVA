@@ -48,7 +48,18 @@ export default class Launcher extends EventEmitter {
 
     app.on('second-instance', (event, argv) => {
       if (global.application) {
-        global.application.showPage('index')
+        // global.application.showPage('index')
+        const win = global.application.showPage('index')
+
+        if (win) {
+          win.show()
+
+          win.focus()
+
+          win.setAlwaysOnTop(true)
+
+          win.setAlwaysOnTop(false)
+        }
       }
 
       // ✅ 统一处理 argv（避免重复调用）
