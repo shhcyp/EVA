@@ -2,22 +2,15 @@ name: Build/release
 
 on:
   push:
-    branches:
-      - protocol/eva
     tags:
       - 'v*'
 
-  pull_request:
-    branches:
-      - protocol/eva
-
 jobs:
   release:
-    runs-on: ${{ matrix.os }}
+    runs-on: windows-latest
 
-    strategy:
-      matrix:
-        os: [windows-latest]
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -35,13 +28,12 @@ jobs:
         uses: motrixapp/action-electron-builder@v2
         with:
           build_script_name: build:github
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
+          # ✅ 正确写法
+          github_token: ${{ github.token }}
+
+          # ✅ 只在 tag 时发布
+          release: true
 
         env:
-          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.snapcraft_token }}
-          TEAM_ID: ${{ secrets.team_id }}
-          APPLE_ID: ${{ secrets.apple_id }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.apple_app_specific_password }}
           NPM_CONFIG_LEGACY_PEER_DEPS: true
