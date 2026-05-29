@@ -129,13 +129,6 @@
         ]
       },
       {
-        "target": "appx",
-        "arch": [
-          "x64",
-          "ia32"
-        ]
-      },
-      {
         "target": "zip",
         "arch": [
           "x64",
@@ -156,7 +149,12 @@
       "filter": [
         "**/*"
       ]
-    }
+    },
+    "asarUnpack": [
+      "**/node_modules/electron/**/*",
+      "**/electron/**/*",
+      "**/*.dll"
+    ]
   },
   "nsis": {
     "artifactName": "${productName}-Setup-${version}.${ext}",

@@ -7,7 +7,8 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest
+    # 👇 建议改用 windows-2022，比 latest 更稳定
+    runs-on: windows-2022
 
     permissions:
       contents: write
@@ -22,18 +23,18 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: |
+          npm install --legacy-peer-deps
+          # 👇 强制安装最新版 electron-builder
+          npm install electron-builder@latest --save-dev
 
       - name: Build Electron app
         uses: motrixapp/action-electron-builder@v2
         with:
           build_script_name: build:github
-
-          # ✅ 正确写法
           github_token: ${{ github.token }}
-
-          # ✅ 只在 tag 时发布
           release: true
-
         env:
           NPM_CONFIG_LEGACY_PEER_DEPS: true
+          # 👇 强制开启完整打包
+          ELECTRON_BUILDER_ARGS: --win --publish always
