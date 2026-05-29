@@ -124,53 +124,43 @@
       {
         "target": "nsis",
         "arch": [
-          "x64"
+          "x64",
+          "ia32"
+        ]
+      },
+      {
+        "target": "appx",
+        "arch": [
+          "x64",
+          "ia32"
+        ]
+      },
+      {
+        "target": "zip",
+        "arch": [
+          "x64",
+          "ia32"
         ]
       },
       {
         "target": "portable",
         "arch": [
-          "x64"
+          "x64",
+          "ia32"
         ]
       }
     ],
-
-    "icon": "build/icon.ico",
-
-    "publisherName": "MacNova",
-
-    "requestedExecutionLevel": "asInvoker",
-
     "extraResources": {
-      "from": "./extra/win/",
+      "from": "./extra/win32/${arch}/",
       "to": "./",
       "filter": [
         "**/*"
       ]
     }
   },
-
   "nsis": {
-    "oneClick": false,
-
-    "allowToChangeInstallationDirectory": true,
-
-    "perMachine": false,
-
-    "createDesktopShortcut": true,
-
-    "createStartMenuShortcut": true,
-
-    "shortcutName": "EVA",
-
     "artifactName": "${productName}-Setup-${version}.${ext}",
-
-    "installerIcon": "build/icon.ico",
-
-    "uninstallerIcon": "build/icon.ico",
-
-    "installerHeaderIcon": "build/icon.ico",
-
-    "deleteAppDataOnUninstall": false
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true
   }
 }
